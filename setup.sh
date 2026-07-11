@@ -1,13 +1,83 @@
 #!/usr/bin/env bash
 #
-# Symlinks this repo's config files into their expected locations.
-# Safe to re-run: existing real files/dirs are backed up with a .bak suffix
-# before the symlink is created, and existing correct symlinks are skipped.
+# Bootstraps a fresh macOS machine:
+#   1. Installs Xcode Command Line Tools (git + C compiler for treesitter).
+#   2. Installs Homebrew and the tools in ./Brewfile.
+#   3. Installs a default node (LTS) via nvm and the GitHub Copilot CLI.
+#   4. Symlinks this repo's config files into their expected locations.
+#
+# Safe to re-run: every phase is guarded, and existing real files/dirs are
+# backed up with a .bak suffix before a symlink is created.
 
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# ---------------------------------------------------------------------------
+# 1. Xcode Command Line Tools (provides git and a C compiler for treesitter)
+# ---------------------------------------------------------------------------
+if xcode-select -p >/dev/null 2>&1; then
+  echo "OK      Xcode Command Line Tools already installed"
+else
+  echo "INSTALL Xcode Command Line Tools"
+  xcode-select --install
+  echo "        Finish the CLT installer dialog, then re-run this script."
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# 2. Homebrew + Brewfile
+# ---------------------------------------------------------------------------
+if ! command -v brew >/dev/null 2>&1; then
+  echo "INSTALL Homebrew"
+  NONINTERACTIVE=1 /bin/bash -c \
+    "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Load brew into this shell, handling both Apple Silicon and Intel prefixes.
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+else
+  echo "ERROR   brew not found on PATH after install" >&2
+  exit 1
+fi
+
+echo "BUNDLE  installing tools from Brewfile"
+brew bundle --file="$DOTFILES_DIR/Brewfile"
+
+# ---------------------------------------------------------------------------
+# 3. node (via nvm) + GitHub Copilot CLI
+# ---------------------------------------------------------------------------
+export NVM_DIR="$HOME/.nvm"
+mkdir -p "$NVM_DIR"
+# shellcheck disable=SC1091
+if [ -s "$(brew --prefix nvm)/nvm.sh" ]; then
+  \. "$(brew --prefix nvm)/nvm.sh"
+
+  if [ "$(nvm version node)" = "N/A" ]; then
+    echo "INSTALL node (LTS) via nvm"
+    nvm install --lts
+  else
+    echo "OK      node already installed via nvm ($(nvm version node))"
+  fi
+else
+  echo "WARN    nvm.sh not found; skipping node/Copilot CLI install" >&2
+fi
+
+if command -v npm >/dev/null 2>&1; then
+  if command -v copilot >/dev/null 2>&1; then
+    echo "OK      GitHub Copilot CLI already installed"
+  else
+    echo "INSTALL GitHub Copilot CLI"
+    npm install -g @github/copilot
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# 4. Symlinks
+# ---------------------------------------------------------------------------
 # "source (relative to this repo):target (absolute path)" pairs
 LINKS=(
   "nvim:$HOME/.config/nvim"
