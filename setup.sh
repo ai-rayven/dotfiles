@@ -54,6 +54,10 @@ export NVM_DIR="$HOME/.nvm"
 mkdir -p "$NVM_DIR"
 # shellcheck disable=SC1091
 if [ -s "$(brew --prefix nvm)/nvm.sh" ]; then
+  # nvm.sh is not safe under `set -euo pipefail` -- it sources/uses unbound
+  # internal variables, which `set -u` treats as a fatal error that kills the
+  # whole script. Relax errexit/nounset while we drive nvm, then restore.
+  set +eu
   \. "$(brew --prefix nvm)/nvm.sh"
 
   if [ "$(nvm version node)" = "N/A" ]; then
@@ -62,12 +66,19 @@ if [ -s "$(brew --prefix nvm)/nvm.sh" ]; then
   else
     echo "OK      node already installed via nvm ($(nvm version node))"
   fi
+  # Activate node so npm is on PATH for the Copilot CLI step below (both the
+  # fresh-install and already-installed branches need this).
+  nvm use --lts >/dev/null 2>&1 || nvm use node >/dev/null 2>&1 || true
+  set -eu
 else
   echo "WARN    nvm.sh not found; skipping node/Copilot CLI install" >&2
 fi
 
 if command -v npm >/dev/null 2>&1; then
-  if command -v copilot >/dev/null 2>&1; then
+  # Check for the npm global specifically -- `command -v copilot` can be
+  # shadowed by VS Code's bundled copilotCli on PATH, which would wrongly skip
+  # installing the standalone GitHub Copilot CLI.
+  if npm ls -g @github/copilot >/dev/null 2>&1; then
     echo "OK      GitHub Copilot CLI already installed"
   else
     echo "INSTALL GitHub Copilot CLI"
