@@ -11,10 +11,4 @@
 
   alias vim='nvim'
   alias vi='nvim'
-  alias ai='copilot'
-
-  # Prefer ~/Documents/Git, fall back to ~/Git, else stay put.
-  for _gitdir in ~/Documents/Git ~/Git; do
-    [ -d "$_gitdir" ] && cd "$_gitdir" && break
-  done
-  unset _gitdir
+  alias ai='claude --enable-auto-mode'
