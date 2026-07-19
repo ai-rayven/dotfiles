@@ -4,5 +4,9 @@ return {
     lazy = false,
     config = true,  -- popup that shows what my leader keys do
   },
+  {
+    'nvim-tree/nvim-web-devicons',
+    opts = {}
+  }
 }
 
