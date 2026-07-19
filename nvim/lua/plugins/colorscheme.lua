@@ -11,6 +11,7 @@ return {
         transparent_mode = is_transparent,
         overrides = {
           SnacksPickerDir = { fg = "#a89984"},
+          ["@string.documentation"] = { link = "Comment" },  -- docstrings render gray + italic like comments
         }
       })
       vim.o.background = "dark"

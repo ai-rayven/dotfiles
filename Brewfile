@@ -6,5 +6,7 @@ brew "tree-sitter-cli" # `tree-sitter` CLI; nvim-treesitter builds parsers with 
 brew "tmux"            # tmux.conf
 brew "nvm"             # sourced from zshrc; manages node
 brew "git"             # lazy.nvim clone, general use
+brew "glow"
 
 cask "wezterm"         # wezterm/ config
+cask "dotnet-sdk"      # .NET 10 runtime for the bicep language server (nvim LSP)
