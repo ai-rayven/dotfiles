@@ -12,7 +12,7 @@ config.keys = {
 	},
 }
 
-config.color_scheme = "rose-pine-moon"
+config.color_scheme = "Gruvbox Dark"
 config.font_size = 15.0
 config.window_background_opacity = 0.8
 config.macos_window_background_blur = 50

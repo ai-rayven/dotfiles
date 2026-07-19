@@ -1,27 +1,20 @@
 return {
   {
-    'rose-pine/neovim',
+    'ellisonleao/gruvbox.nvim',
     lazy = false,
     priority = 1000,
-    name = 'rose-pine',
     config = function()
-      require('rose-pine').setup({
-        dark_variant = 'moon',
-        dim_inactive_windows = false,
-        extend_background_behind_borders = false,
-        styles = {
-          italic = false,
-          transparency = vim.uv.os_uname().sysname == 'Darwin'
-            or string.find(vim.uv.os_uname().sysname, 'Windows') ~= nil
-            or string.find(vim.uv.os_uname().release, 'WSL') ~= nil,
-        },
+      local is_transparent = vim.uv.os_uname().sysname == 'Darwin'
+              or string.find(vim.uv.os_uname().sysname, 'Windows') ~= nil
+              or string.find(vim.uv.os_uname().release, 'WSL') ~= nil
+      require('gruvbox').setup({
+        transparent_mode = is_transparent,
+        overrides = {
+          SnacksPickerDir = { fg = "#a89984"},
+        }
       })
-
-      vim.cmd('colorscheme rose-pine')
-
-      -- Make the dimmed directory path in the Snacks picker readable
-      local palette = require('rose-pine.palette')
-      vim.api.nvim_set_hl(0, 'SnacksPickerDir', { fg = palette.subtle })
+      vim.o.background = "dark"
+      vim.cmd('colorscheme gruvbox')
     end,
   },
 }
