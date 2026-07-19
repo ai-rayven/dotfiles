@@ -4,7 +4,7 @@ return {
     lazy = false,
     build = ':TSUpdate',
     config = function()
-      local ensure_installed = { 'bicep', 'lua', 'vim', 'bash', 'json', 'yaml' }
+      local ensure_installed = { 'bicep', 'lua', 'vim', 'bash', 'json', 'yaml', 'python', 'markdown', 'vimdoc' }
       require('nvim-treesitter').install(ensure_installed)
 
       vim.api.nvim_create_autocmd('FileType', {
