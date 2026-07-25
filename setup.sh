@@ -3,7 +3,7 @@
 # Bootstraps a fresh macOS machine:
 #   1. Installs Xcode Command Line Tools (git + C compiler for treesitter).
 #   2. Installs Homebrew and the tools in ./Brewfile.
-#   3. Installs a default node (LTS) via nvm and the GitHub Copilot CLI.
+#   3. Installs a default node (LTS) via nvm.
 #   4. Symlinks this repo's config files into their expected locations.
 #
 # Safe to re-run: every phase is guarded, and existing real files/dirs are
@@ -48,7 +48,7 @@ echo "BUNDLE  installing tools from Brewfile"
 brew bundle --file="$DOTFILES_DIR/Brewfile"
 
 # ---------------------------------------------------------------------------
-# 3. node (via nvm) + GitHub Copilot CLI
+# 3. node (via nvm)
 # ---------------------------------------------------------------------------
 export NVM_DIR="$HOME/.nvm"
 mkdir -p "$NVM_DIR"
@@ -66,24 +66,10 @@ if [ -s "$(brew --prefix nvm)/nvm.sh" ]; then
   else
     echo "OK      node already installed via nvm ($(nvm version node))"
   fi
-  # Activate node so npm is on PATH for the Copilot CLI step below (both the
-  # fresh-install and already-installed branches need this).
   nvm use --lts >/dev/null 2>&1 || nvm use node >/dev/null 2>&1 || true
   set -eu
 else
-  echo "WARN    nvm.sh not found; skipping node/Copilot CLI install" >&2
-fi
-
-if command -v npm >/dev/null 2>&1; then
-  # Check for the npm global specifically -- `command -v copilot` can be
-  # shadowed by VS Code's bundled copilotCli on PATH, which would wrongly skip
-  # installing the standalone GitHub Copilot CLI.
-  if npm ls -g @github/copilot >/dev/null 2>&1; then
-    echo "OK      GitHub Copilot CLI already installed"
-  else
-    echo "INSTALL GitHub Copilot CLI"
-    npm install -g @github/copilot
-  fi
+  echo "WARN    nvm.sh not found; skipping node install" >&2
 fi
 
 # ---------------------------------------------------------------------------
@@ -95,14 +81,14 @@ LINKS=(
   "tmux.conf:$HOME/.tmux.conf"
   "wezterm:$HOME/.config/wezterm"
   "zshrc:$HOME/.zshrc"
-  "skills:$HOME/.copilot/skills"
+  "skills:$HOME/.claude/skills"
   # Shared agent guidelines. One source file, linked to each tool's global path:
   #   Claude Code       -> ~/.claude/CLAUDE.md
   #   Codex CLI         -> ~/.codex/AGENTS.md
-  #   GitHub Copilot CLI-> ~/.copilot/copilot-instructions.md
+  #   opencode          -> ~/.config/opencode/AGENTS.md
   "AGENTS.md:$HOME/.claude/CLAUDE.md"
   "AGENTS.md:$HOME/.codex/AGENTS.md"
-  "AGENTS.md:$HOME/.copilot/copilot-instructions.md"
+  "AGENTS.md:$HOME/.config/opencode/AGENTS.md"
 )
 
 for pair in "${LINKS[@]}"; do
