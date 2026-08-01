@@ -19,6 +19,31 @@ return {
           'bicep',       -- bicep (needs dotnet runtime)
         },
       })
+
+      -- python: basedpyright owns types, ruff owns lint/format.
+      -- basedpyright defaults to "recommended", which reports every untyped
+      -- expression and missing stub; "standard" matches upstream pyright.
+      vim.lsp.config('basedpyright', {
+        settings = {
+          basedpyright = {
+            analysis = {
+              typeCheckingMode = 'standard',
+              diagnosticSeverityOverrides = {
+                -- ruff already reports these, don't double up
+                reportUnusedImport = 'none',
+                reportUnusedVariable = 'none',
+              },
+            },
+          },
+        },
+      })
+
+      -- ruff's hover is a stub; let basedpyright answer hover requests
+      vim.lsp.config('ruff', {
+        on_attach = function(client)
+          client.server_capabilities.hoverProvider = false
+        end,
+      })
     end,
   },
 }
