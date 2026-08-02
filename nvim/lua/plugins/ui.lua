@@ -7,6 +7,11 @@ return {
   {
     'nvim-tree/nvim-web-devicons',
     opts = {}
+  },
+  {
+    'shortcuts/no-neck-pain.nvim',
+    keys = { { '<leader>c', '<cmd>NoNeckPain<cr>', desc = 'Toggle Centered Text' } },
+    opts = {}
   }
 }
 
