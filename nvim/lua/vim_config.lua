@@ -1,5 +1,7 @@
 local o = vim.opt
 vim.g.mapleader = ' '          -- space is the leader key
+vim.g.loaded_netrw = 1         -- nvim-tree replaces netrw
+vim.g.loaded_netrwPlugin = 1
 o.expandtab = true             -- spaces, not tabs
 o.shiftwidth = 2               -- 2 spaces per indent level
 o.number = true                -- absolute number on the cursor line, relative elsewhere

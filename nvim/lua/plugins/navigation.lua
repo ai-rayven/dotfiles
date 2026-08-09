@@ -1,8 +1,13 @@
 return {
   {
-    'stevearc/oil.nvim',
-    opts = { view_options = { show_hidden = true } },
-    keys = { { '<leader>e', '<cmd>Oil<cr>', desc = 'File Browser' } },
+    'nvim-tree/nvim-tree.lua',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = {
+      filters = { dotfiles = false },
+      view = { width = 35 },
+      renderer = { group_empty = true },
+    },
+    keys = { { '<leader>e', '<cmd>NvimTreeToggle<cr>', desc = 'File Browser' } },
   },
   {
     'folke/snacks.nvim',
