@@ -20,6 +20,14 @@ return {
           groups = {
             all = {
               ["@string.documentation"] = { link = "Comment" },  -- docstrings render gray + italic like comments
+              -- Full-line diff backgrounds are kept subtle so a mostly-added/removed file
+              -- doesn't become a wall of color that drowns the syntax highlighting; the
+              -- gutter sign bars still mark every changed line. Only DiffText (the exact
+              -- changed words) uses a strong, high-contrast color so real edits pop.
+              DiffAdd    = { bg = "#16261c", fg = "NONE" },
+              DiffChange = { bg = "#1c2230", fg = "NONE" },
+              DiffDelete = { bg = "#2a1a1e", fg = "NONE" },
+              DiffText   = { bg = "#1f4d7a", fg = "#ffffff", bold = true },
             },
           },
         })

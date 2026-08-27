@@ -12,3 +12,7 @@ o.clipboard = 'unnamedplus'    -- share the system clipboard
 o.scrolloff = 16               -- keep cursor away from the screen edge
 o.undofile = true              -- persistent undo across sessions
 o.termguicolors = true
+-- nvim 0.12 already enables linematch:40 by default; bump the cap so larger hunks
+-- also get intelligent intra-hunk line alignment
+o.diffopt:remove('linematch:40')
+o.diffopt:append('linematch:60')
