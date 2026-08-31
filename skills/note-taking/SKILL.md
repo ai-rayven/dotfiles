@@ -1,5 +1,5 @@
 ---
-name: obsidian-notes
+name: note-taking
 version: "1.0"
 description: >
   Conventions and workflow for organizing notes in the personal Obsidian vault at ~/Documents/Obsidian.
