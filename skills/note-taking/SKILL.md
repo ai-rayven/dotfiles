@@ -56,26 +56,37 @@ Separate **resolved facts** (plain bullets) from **open questions** (prefix `- *
 
 ## Folder structure and the Inbox workflow
 
-Folders answer **where a note lives** (its project/area/lifecycle stage). Tags answer **what it is**
-(`#type/*`) and **what it's about** (topics). These never overlap, so there is no "folder or tag?"
-ambiguity for the same fact. Do **not** create subfolders that merely mirror a tag (e.g. one folder
-per `#type/*`) - that duplicates information.
+Folders and tags can each answer "where does this live" and "what is this." A vault picks, in config,
+which axis drives its folders. The one hard rule: **whatever a folder encodes, it must stay in sync
+with the tag that encodes the same thing** - pick a single source of truth per fact, or mirror them
+deterministically. Never let folder and tag disagree.
 
-Every vault has three lifecycle locations, named in config:
+Every vault has these lifecycle locations, named in config:
 
 - `inbox` - the capture zone. **Every new note lands here first.** Nothing stays here long-term.
-- `activeRoot` - triaged, active notes live here (or in a project/area subfolder under it).
+- `activeRoot` - the root for triaged, active notes.
 - `archive` - done or inactive notes.
 
-Additional folders in `folders` are stable projects/areas. Introduce a **new** folder only when a note
-genuinely does not belong to any existing one - propose it to the user, then add it to config.
+### Type-folder mirroring (when `typeFolders` is set in config)
+Some vaults organize the file tree by note type for visual clarity, while still keeping the `#type/*`
+tag for cross-folder aggregation (Dataview/search). When config defines `typeFolders` (a map from
+each type to a folder), the folder and the tag are **kept in lockstep**:
+
+- A note tagged `#type/ticket` lives in `typeFolders.ticket`, and vice versa.
+- On triage/audit, the destination folder is derived from the note's `#type/*` tag. If a note's folder
+  and tag disagree, the tag is authoritative - move the file to match, or fix the tag if it's wrong.
+- Changing a note's type means moving the file **and** updating the tag together.
+
+Non-type folders in `folders` are stable projects/areas or lifecycle stages. Introduce a **new** folder
+only when a note genuinely does not fit an existing one - propose it to the user, then add it to config.
 
 ### Triage workflow
 Run when asked ("triage my inbox") or opportunistically after capture. For each note in `inbox`:
 1. Ensure it is convention-compliant (filename dated, H1, one tag line: scope + one type + tickets + topics).
-2. Decide its destination:
-   - Fits an existing folder -> move it there.
-   - Belongs to a new project/area -> propose the folder to the user, create it, add to config, move.
+2. Determine destination:
+   - If `typeFolders` is configured, move to the folder for the note's `#type/*` tag.
+   - Otherwise, move to the matching project/area folder.
+   - New project/area needed -> propose the folder to the user, create it, add to config, move.
    - Done/ephemeral -> move to `archive` (or delete if truly disposable).
 3. Never leave a triaged note in the inbox.
 
@@ -117,6 +128,8 @@ Normalize on sight: collapse flat spelling collisions into the namespaced form d
 5. Namespace ticket references under `#ticket/*`.
 6. Demote any relationship marker (e.g. `follow-up`) out of `#type/*` to a plain tag.
 7. Add a tag line to any untagged work note.
+8. If `typeFolders` is configured, verify each note sits in the folder matching its `#type/*` tag;
+   move any mismatches so folder and tag agree.
 
 ### Establishing / changing conventions (with the user)
 When there is no config, or the user wants to change the scheme:
@@ -135,9 +148,14 @@ When there is no config, or the user wants to change the scheme:
   "activeRoot": "Work",
   "folders": {
     "Work/Inbox": "capture zone - new notes land here first",
-    "Work": "active, triaged work notes",
     "Work/Archive": "done / inactive notes",
     "Writing": "long-form drafts"
+  },
+  "typeFolders": {
+    "ticket": "Work/Tickets",
+    "investigation": "Work/Investigations",
+    "reference": "Work/Reference",
+    "meeting": "Work/Meetings"
   },
   "scopeTags": ["#area/external", "#area/internal"],
   "types": {
