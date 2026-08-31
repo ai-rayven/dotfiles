@@ -54,6 +54,31 @@ Follow the vault's `filenamePattern`. The default pattern is:
 
 Separate **resolved facts** (plain bullets) from **open questions** (prefix `- **Q:**` or `- **Open:**`).
 
+## Folder structure and the Inbox workflow
+
+Folders answer **where a note lives** (its project/area/lifecycle stage). Tags answer **what it is**
+(`#type/*`) and **what it's about** (topics). These never overlap, so there is no "folder or tag?"
+ambiguity for the same fact. Do **not** create subfolders that merely mirror a tag (e.g. one folder
+per `#type/*`) - that duplicates information.
+
+Every vault has three lifecycle locations, named in config:
+
+- `inbox` - the capture zone. **Every new note lands here first.** Nothing stays here long-term.
+- `activeRoot` - triaged, active notes live here (or in a project/area subfolder under it).
+- `archive` - done or inactive notes.
+
+Additional folders in `folders` are stable projects/areas. Introduce a **new** folder only when a note
+genuinely does not belong to any existing one - propose it to the user, then add it to config.
+
+### Triage workflow
+Run when asked ("triage my inbox") or opportunistically after capture. For each note in `inbox`:
+1. Ensure it is convention-compliant (filename dated, H1, one tag line: scope + one type + tickets + topics).
+2. Decide its destination:
+   - Fits an existing folder -> move it there.
+   - Belongs to a new project/area -> propose the folder to the user, create it, add to config, move.
+   - Done/ephemeral -> move to `archive` (or delete if truly disposable).
+3. Never leave a triaged note in the inbox.
+
 ## Tag system (structure is fixed; values come from config)
 
 One tag line per note, space-separated. Tags use `/` namespaces so they cluster in the tag pane.
@@ -75,11 +100,12 @@ Normalize on sight: collapse flat spelling collisions into the namespaced form d
 
 ## Common workflows
 
-### Filing a new note
+### Filing a new note (capture)
 1. Load `.notes-conventions.json` (Step 0).
-2. Create the file in the correct folder with a convention-compliant, dated filename.
+2. Create the file in the `inbox` folder with a convention-compliant, dated filename.
 3. Add H1, then the tag line: scope + exactly one type + any ticket tags + topic tags.
 4. Lead with a `## Summary`.
+5. Triage now or later (see Triage workflow) to move it out of the inbox.
 
 ### Standardizing / auditing tags
 1. Load the config so you know the target vocabulary.
@@ -104,7 +130,15 @@ When there is no config, or the user wants to change the scheme:
 ```json
 {
   "filenamePattern": "<Topic or Ticket> - <Descriptor> - <YYYY-MM-DD>.md",
-  "folders": { "Work": "day-to-day work notes", "Writing": "long-form drafts" },
+  "inbox": "Work/Inbox",
+  "archive": "Work/Archive",
+  "activeRoot": "Work",
+  "folders": {
+    "Work/Inbox": "capture zone - new notes land here first",
+    "Work": "active, triaged work notes",
+    "Work/Archive": "done / inactive notes",
+    "Writing": "long-form drafts"
+  },
   "scopeTags": ["#area/external", "#area/internal"],
   "types": {
     "ticket": "work scoped to a tracked ticket",
