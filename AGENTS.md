@@ -13,6 +13,7 @@
 - Write zero speculative code (YAGNI).
 
 ## Workflow
+- Worktrees are created inside the repo in a `.worktrees` folder.
 - When doing bug fixes, always start with reproducing the bug in an E2E setting as closely aligned with how an end user would experience it as possible. This makes sure you find the real problem so your fix will actually solve it.
 - Run the full automated gate (typing, linting, tests) via a single command. Do not run individual commands, instead use proper idiom for creating a reusable test command that runs everything at once.
 
@@ -22,3 +23,4 @@
 - Favor early returns over deep nesting and chained `or` fall-throughs.
 - Prefer a named class over multi-value tuples for functions returning several related values or with many parameters, so the contract is self-documenting and safe to extend.
 - Co-locate data conversion and serialization logic exactly where the system crosses an external boundary.
+- Avoid over-explaining in comments and prefer fewer comments. The only documentation to add is docstrings for functions, describing specifically what the function does and its arguments, nothing about decisions or over-explanations.
